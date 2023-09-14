@@ -89,7 +89,6 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
         goto ONCE_MORE;
       }
       tracer.moveRoboPID(robo,50); // スタートは若干遅め
-      //robo.setPower(70,70);
       break;
 
 
@@ -119,7 +118,6 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
         goto ONCE_MORE;
       }
       tracer.moveRoboPID(robo,70); // 全速力で走る
-      //robo.setPower(80,80);
       break;
 
     case 4: // 第２カーブ
@@ -130,15 +128,6 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
       }
       tracer.moveRoboPID(robo,50); // ちょっとスピードを抑える
       break;
-
-    // case 5: // LAPまで
-    //   if(3.0 > position.x ){ // 
-    //     syslog(LOG_NOTICE,"switch to case 6 ************************");
-    //     phase = 6;
-    //     goto ONCE_MORE;
-    //   }
-    //   tracer.moveRoboPID(robo,70); // 全速力で走る
-    //   break;
 
     case 6: // 1つ目のループに入る
     
@@ -158,7 +147,7 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
       goto ONCE_MORE;
     }
 
-    tracer.ChangemoveRoboPID(robo,60); // 全速力で走る
+    tracer.ChangemoveRoboPID(robo,60); // ちょい抑えめ
     break;
   
   case 8:// 1つ目のループに戻る
@@ -200,14 +189,14 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
 
   break; 
 
-  case 12:// 直帰
+  case 12:// ダブルループを出る
 
-  if(3.4 < position.x){ // 
+  if(3.2 < position.x){ // 
     syslog(LOG_NOTICE,"switch to case 13 ************************");
     phase = 13;
     goto ONCE_MORE;
   }
-  tracer.moveRoboPID(robo,70); // ちょい抑えめ
+  tracer.moveRoboPID(robo,60); // ちょい抑える
 
   break;
 
@@ -227,7 +216,7 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
     phase = 15;
     goto ONCE_MORE;
   }
-  tracer.ChangemoveRoboPID(robo,60); // ちょい抑えめ
+  tracer.ChangemoveRoboPID(robo,70); // 全力で走る
 
   break;
 
@@ -236,7 +225,7 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
   if(turnloop == 0){
     syslog(LOG_NOTICE,"90度旋回 ************************");
     robo.setPower(30,-30);
-    clock.sleep(840000);
+    clock.sleep(800000);
     startTime = clock.now();
   }else if(endTime-startTime > 8000000){ 
     if(colorNumber == COLOR_BLACK){
@@ -252,43 +241,26 @@ bool moveRobo(RoboBody& robo, Tracer& tracer, ev3api::Clock& clock){
   turnloop++;
   break;
 
-  case 16: // 90度旋回して難所へ
+  case 16: // 90度旋回してゴールへ
 
-  // if(colorNumber == COLOR_BLACK){ // 
-  //   // robo.setPower(0,30);
-  //   syslog(LOG_NOTICE,"switch to case 17 ************************");
-  //   phase = 17;
-  //   goto ONCE_MORE;
-  // }
   robo.setPower(-30,30);
   clock.sleep(800000);
-  syslog(LOG_NOTICE,"switch to case 16 ************************");
-  phase = 16;
+  syslog(LOG_NOTICE,"switch to case 17 ************************");
+  phase = 17;
+
   break;
 
-  case 17: // 90度旋回してゴールへ
-  if(turnloop == 0){
-    syslog(LOG_NOTICE,"90度旋回 ************************");
-    robo.setPower(30,-30);
-    clock.sleep(840000);
-    startTime = clock.now();
+  case 17: // ゴールへ
 
-  }else if(colorNumber == COLOR_BLUE){ // 
+  if(colorNumber == COLOR_BLUE){ // 
     syslog(LOG_NOTICE,"switch to case 50 ************************");
     phase = 50;
     goto ONCE_MORE;
   }
-  tracer.ChangemoveRoboPID(robo,50); // ちょい抑えめ
+  tracer.ChangemoveRoboPID(robo,70); // 全力で走る
   turnloop++;
 
   break;
-
-
-
-
-
-
-
 
   case 49:// 直帰
 
